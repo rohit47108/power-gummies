@@ -1,0 +1,981 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Power Gummies Store</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#5D5CDE',
+                        'primary-dark': '#4B4BC8',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .product-image {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        .cart-slide-in {
+            animation: slideIn 0.3s ease-out;
+        }
+        @keyframes slideIn {
+            from { transform: translateX(100%); }
+            to { transform: translateX(0); }
+        }
+        .fade-in {
+            animation: fadeIn 0.3s ease-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        .modal-enter {
+            animation: modalEnter 0.3s ease-out;
+        }
+        @keyframes modalEnter {
+            from { opacity: 0; transform: scale(0.9); }
+            to { opacity: 1; transform: scale(1); }
+        }
+    </style>
+</head>
+<body class="bg-white dark:bg-gray-900 text-gray-900 dark:text-white transition-colors">
+    <!-- Header -->
+    <header class="bg-white dark:bg-gray-800 shadow-md sticky top-0 z-40">
+        <div class="container mx-auto px-4 py-4">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-2">
+                    <div class="w-8 h-8 bg-primary rounded-full flex items-center justify-center">
+                        <span class="text-white font-bold text-sm">PG</span>
+                    </div>
+                    <h1 class="text-2xl font-bold text-primary">Power Gummies</h1>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <button id="account-btn" class="text-primary hover:text-primary-dark transition-colors">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                        </svg>
+                    </button>
+                    <button id="cart-btn" class="relative bg-primary hover:bg-primary-dark text-white px-4 py-2 rounded-lg transition-colors flex items-center space-x-2">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4m0 0L7 13m0 0l-1.68 4H19.5"></path>
+                        </svg>
+                        <span>Cart</span>
+                        <span id="cart-count" class="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center hidden">0</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Promotional Banner -->
+    <div id="promo-banner" class="bg-gradient-to-r from-green-500 to-green-600 text-white text-center py-3">
+        <p class="font-semibold">🎉 Use code <span class="font-bold bg-white text-green-600 px-2 py-1 rounded">FIRST10</span> to get 10% off your first order!</p>
+    </div>
+
+    <!-- Welcome Banner for New Users -->
+    <div id="welcome-banner" class="bg-blue-500 text-white text-center py-3 hidden">
+        <p class="font-semibold">🎉 Welcome! Don't forget to use your <span class="font-bold">FIRST10</span> discount code!</p>
+    </div>
+
+    <!-- Hero Section -->
+    <section class="bg-gradient-to-r from-primary to-purple-600 text-white py-16">
+        <div class="container mx-auto px-4 text-center">
+            <h2 class="text-4xl md:text-6xl font-bold mb-4">Power Up Your Day</h2>
+            <p class="text-xl md:text-2xl mb-8 opacity-90">Premium energy gummies in multiple sizes</p>
+            <button onclick="document.getElementById('products').scrollIntoView({behavior: 'smooth'})" class="bg-white text-primary px-8 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors">
+                Shop Now
+            </button>
+        </div>
+    </section>
+
+    <!-- Products Section -->
+    <section id="products" class="py-16">
+        <div class="container mx-auto px-4">
+            <h2 class="text-3xl md:text-4xl font-bold text-center mb-12">Our Gummy Collection</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8" id="product-grid">
+                <!-- Products will be populated by JavaScript -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Account Modal -->
+    <div id="account-modal" class="fixed inset-0 z-50 hidden">
+        <div class="absolute inset-0 bg-black bg-opacity-50"></div>
+        <div class="absolute inset-4 md:inset-16 lg:inset-32 bg-white dark:bg-gray-800 rounded-lg shadow-xl modal-enter">
+            <div class="p-6 h-full overflow-y-auto">
+                <div class="flex items-center justify-between mb-6">
+                    <h3 id="account-modal-title" class="text-2xl font-bold">Account</h3>
+                    <button id="close-account" class="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                    </button>
+                </div>
+               
+                <!-- Login Form -->
+                <div id="login-form" class="space-y-6">
+                    <h4 class="text-xl font-semibold">Sign In</h4>
+                    <form id="login-form-el" class="space-y-4">
+                        <input type="email" id="login-email" placeholder="Email" required class="w-full px-4 py-3 text-base border rounded-lg focus:ring-2 focus:ring-primary focus:border-primary dark:bg-gray-700 dark:border-gray-600">
+                        <input type="password" id="login-password" placeholder="Password" required class="w-full px-4 py-3 text-base border rounded-lg focus:ring-2 focus:ring-primary focus:border-primary dark:bg-gray-700 dark:border-gray-600">
+                        <button type="submit" class="w-full bg-primary hover:bg-primary-dark text-white py-3 rounded-lg font-semibold transition-colors">
+                            Sign In
+                        </button>
+                    </form>
+                    <p class="text-center">
+                        Don't have an account?
+                        <button id="show-register" class="text-primary hover:text-primary-dark font-semibold">Sign Up</button>
+                    </p>
+                </div>
+
+                <!-- Register Form -->
+                <div id="register-form" class="space-y-6 hidden">
+                    <h4 class="text-xl font-semibold">Create Account</h4>
+                    <form id="register-form-el" class="space-y-4">
+                        <input type="text" id="register-name" placeholder="Full Name" required class="w-full px-4 py-3 text-base border rounded-lg focus:ring-2 focus:ring-primary focus:border-primary dark:bg-gray-700 dark:border-gray-600">
+                        <input type="email" id="register-email" placeholder="Email" required class="w-full px-4 py-3 text-base border rounded-lg focus:ring-2 focus:ring-primary focus:border-primary dark:bg-gray-700 dark:border-gray-600">
+                        <input type="password" id="register-password" placeholder="Password" required class="w-full px-4 py-3 text-base border rounded-lg focus:ring-2 focus:ring-primary focus:border-primary dark:bg-gray-700 dark:border-gray-600">
+                        <button type="submit" class="w-full bg-primary hover:bg-primary-dark text-white py-3 rounded-lg font-semibold transition-colors">
+                            Create Account
+                        </button>
+                    </form>
+                    <p class="text-center">
+                        Already have an account?
+                        <button id="show-login" class="text-primary hover:text-primary-dark font-semibold">Sign In</button>
+                    </p>
+                </div>
+
+                <!-- User Dashboard -->
+                <div id="user-dashboard" class="space-y-6 hidden">
+                    <div class="text-center">
+                        <h4 class="text-xl font-semibold">Welcome back, <span id="user-name"></span>!</h4>
+                        <p class="text-gray-600 dark:text-gray-400">Email: <span id="user-email"></span></p>
+                    </div>
+                    <div class="space-y-4">
+                        <div class="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg">
+                            <h5 class="font-semibold mb-2">Account Benefits</h5>
+                            <ul class="text-sm text-gray-600 dark:text-gray-400 space-y-1">
+                                <li>• Faster checkout</li>
+                                <li>• Order history</li>
+                                <li>• Exclusive offers</li>
+                                <li id="first-order-benefit" class="hidden text-green-600 dark:text-green-400 font-semibold">• 10% off first order (FIRST10)</li>
+                            </ul>
+                        </div>
+                        <button id="logout-btn" class="w-full bg-red-500 hover:bg-red-600 text-white py-2 rounded-lg transition-colors">
+                            Sign Out
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Cart Sidebar -->
+    <div id="cart-sidebar" class="fixed inset-0 z-50 hidden">
+        <div class="absolute inset-0 bg-black bg-opacity-50" id="cart-overlay"></div>
+        <div class="absolute right-0 top-0 h-full w-full max-w-md bg-white dark:bg-gray-800 shadow-xl cart-slide-in">
+            <div class="flex flex-col h-full">
+                <div class="flex items-center justify-between p-6 border-b dark:border-gray-700">
+                    <h3 class="text-xl font-bold">Shopping Cart</h3>
+                    <button id="close-cart" class="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                    </button>
+                </div>
+                <div class="flex-1 overflow-y-auto p-6">
+                    <div id="cart-items" class="space-y-4">
+                        <!-- Cart items will be populated by JavaScript -->
+                    </div>
+                    <div id="empty-cart" class="text-center py-8 hidden">
+                        <svg class="w-16 h-16 mx-auto text-gray-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4m0 0L7 13m0 0l-1.68 4H19.5"></path>
+                        </svg>
+                        <p class="text-gray-500 dark:text-gray-400">Your cart is empty</p>
+                    </div>
+                </div>
+                <div class="border-t dark:border-gray-700 p-6">
+                    <!-- Coupon Section -->
+                    <div class="mb-4">
+                        <div class="flex space-x-2">
+                            <input type="text" id="coupon-input" placeholder="Coupon Code" class="flex-1 px-3 py-2 text-base border rounded-lg focus:ring-2 focus:ring-primary focus:border-primary dark:bg-gray-700 dark:border-gray-600">
+                            <button id="apply-coupon" class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-lg transition-colors">
+                                Apply
+                            </button>
+                        </div>
+                        <div id="coupon-message" class="text-sm mt-2 hidden"></div>
+                    </div>
+                   
+                    <div class="space-y-2 mb-4">
+                        <div class="flex justify-between">
+                            <span>Subtotal:</span>
+                            <span id="cart-subtotal">$0.00</span>
+                        </div>
+                        <div id="discount-row" class="flex justify-between text-green-600 hidden">
+                            <span>Discount:</span>
+                            <span id="discount-amount">-$0.00</span>
+                        </div>
+                        <div class="flex justify-between items-center text-lg font-bold border-t pt-2">
+                            <span>Total:</span>
+                            <span id="cart-total" class="text-primary">$0.00</span>
+                        </div>
+                    </div>
+                    <button id="checkout-btn" class="w-full bg-primary hover:bg-primary-dark text-white py-3 rounded-lg font-semibold transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
+                        Checkout
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Checkout Modal -->
+    <div id="checkout-modal" class="fixed inset-0 z-50 hidden">
+        <div class="absolute inset-0 bg-black bg-opacity-50"></div>
+        <div class="absolute inset-4 md:inset-8 lg:inset-16 bg-white dark:bg-gray-800 rounded-lg shadow-xl overflow-y-auto">
+            <div class="p-6">
+                <div class="flex items-center justify-between mb-6">
+                    <h3 class="text-2xl font-bold">Checkout</h3>
+                    <button id="close-checkout" class="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                    </button>
+                </div>
+               
+                <form id="checkout-form" class="space-y-6">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <h4 class="font-semibold mb-4">Shipping Information</h4>
+                            <div class="space-y-4">
+                                <input type="text" id="checkout-name" placeholder="Full Name" required class="w-full px-4 py-3 text-base border rounded-lg focus:ring-2 focus:ring-primary focus:border-primary dark:bg-gray-700 dark:border-gray-600">
+                                <input type="email" id="checkout-email" placeholder="Email" required class="w-full px-4 py-3 text-base border rounded-lg focus:ring-2 focus:ring-primary focus:border-primary dark:bg-gray-700 dark:border-gray-600">
+                                <input type="text" placeholder="Address" required class="w-full px-4 py-3 text-base border rounded-lg focus:ring-2 focus:ring-primary focus:border-primary dark:bg-gray-700 dark:border-gray-600">
+                                <div class="grid grid-cols-2 gap-4">
+                                    <input type="text" placeholder="City" required class="w-full px-4 py-3 text-base border rounded-lg focus:ring-2 focus:ring-primary focus:border-primary dark:bg-gray-700 dark:border-gray-600">
+                                    <input type="text" placeholder="ZIP Code" required class="w-full px-4 py-3 text-base border rounded-lg focus:ring-2 focus:ring-primary focus:border-primary dark:bg-gray-700 dark:border-gray-600">
+                                </div>
+                            </div>
+                        </div>
+                       
+                        <div>
+                            <h4 class="font-semibold mb-4">Payment Information</h4>
+                            <div class="space-y-4">
+                                <input type="text" placeholder="Card Number" required class="w-full px-4 py-3 text-base border rounded-lg focus:ring-2 focus:ring-primary focus:border-primary dark:bg-gray-700 dark:border-gray-600">
+                                <div class="grid grid-cols-2 gap-4">
+                                    <input type="text" placeholder="MM/YY" required class="w-full px-4 py-3 text-base border rounded-lg focus:ring-2 focus:ring-primary focus:border-primary dark:bg-gray-700 dark:border-gray-600">
+                                    <input type="text" placeholder="CVV" required class="w-full px-4 py-3 text-base border rounded-lg focus:ring-2 focus:ring-primary focus:border-primary dark:bg-gray-700 dark:border-gray-600">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                   
+                    <div class="border-t pt-6">
+                        <h4 class="font-semibold mb-4">Order Summary</h4>
+                        <div id="checkout-items" class="space-y-2 mb-4">
+                            <!-- Order items will be populated -->
+                        </div>
+                        <div class="space-y-2">
+                            <div class="flex justify-between">
+                                <span>Subtotal:</span>
+                                <span id="checkout-subtotal">$0.00</span>
+                            </div>
+                            <div id="checkout-discount-row" class="flex justify-between text-green-600 hidden">
+                                <span>Discount:</span>
+                                <span id="checkout-discount">-$0.00</span>
+                            </div>
+                            <div class="flex justify-between items-center text-xl font-bold border-t pt-2">
+                                <span>Total:</span>
+                                <span id="checkout-total" class="text-primary">$0.00</span>
+                            </div>
+                        </div>
+                    </div>
+                   
+                    <button type="submit" class="w-full bg-primary hover:bg-primary-dark text-white py-3 rounded-lg font-semibold transition-colors">
+                        Complete Order
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Success Modal -->
+    <div id="success-modal" class="fixed inset-0 z-50 hidden">
+        <div class="absolute inset-0 bg-black bg-opacity-50"></div>
+        <div class="absolute inset-4 md:inset-16 lg:inset-32 bg-white dark:bg-gray-800 rounded-lg shadow-xl flex items-center justify-center">
+            <div class="text-center p-8">
+                <div class="w-16 h-16 bg-green-500 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                    </svg>
+                </div>
+                <h3 class="text-2xl font-bold mb-2">Order Confirmed!</h3>
+                <p class="text-gray-600 dark:text-gray-400 mb-6">Thank you for your purchase. Your order will be shipped soon.</p>
+                <button id="close-success" class="bg-primary hover:bg-primary-dark text-white px-6 py-2 rounded-lg transition-colors">
+                    Continue Shopping
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Product data with size variants
+        const products = [
+            {
+                id: 1,
+                name: "Golden Cherry",
+                description: "Rich golden cherry flavor with natural energy boost",
+                image: "🍒",
+                sizes: [
+                    { size: "10oz", price: 9.99 },
+                    { size: "20oz", price: 17.99 },
+                    { size: "30oz", price: 26.99 }
+                ]
+            },
+            {
+                id: 2,
+                name: "Strawberry",
+                description: "Sweet strawberry flavor packed with vitamins",
+                image: "🍓",
+                sizes: [
+                    { size: "10oz", price: 9.99 },
+                    { size: "20oz", price: 17.99 },
+                    { size: "30oz", price: 26.99 }
+                ]
+            },
+            {
+                id: 3,
+                name: "Passion Fruit",
+                description: "Exotic passion fruit taste for tropical energy",
+                image: "🥭",
+                sizes: [
+                    { size: "10oz", price: 9.99 },
+                    { size: "20oz", price: 17.99 },
+                    { size: "30oz", price: 26.99 }
+                ]
+            },
+            {
+                id: 4,
+                name: "Lemon",
+                description: "Zesty lemon flavor with vitamin C boost",
+                image: "🍋",
+                sizes: [
+                    { size: "10oz", price: 9.99 },
+                    { size: "20oz", price: 17.99 },
+                    { size: "30oz", price: 26.99 }
+                ]
+            }
+        ];
+
+        // App state
+        let cart = [];
+        let currentUser = null;
+        let appliedCoupon = null;
+
+        // Available coupons
+        const coupons = {
+            'FIRST10': { discount: 0.10, description: '10% off first order', firstOrderOnly: true }
+        };
+
+        // Dark mode detection
+        if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+            document.documentElement.classList.add('dark');
+        }
+        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', event => {
+            if (event.matches) {
+                document.documentElement.classList.add('dark');
+            } else {
+                document.documentElement.classList.remove('dark');
+            }
+        });
+
+        // Initialize the app
+        document.addEventListener('DOMContentLoaded', function() {
+            loadUserData();
+            renderProducts();
+            setupEventListeners();
+            updateCartUI();
+            updateAccountUI();
+        });
+
+        // User management
+        function loadUserData() {
+            // Simulate loading user data (normally from localStorage or API)
+            const userData = getCurrentUser();
+            if (userData) {
+                currentUser = userData;
+            }
+        }
+
+        function getCurrentUser() {
+            // Simulate user data storage (in real app, this would be localStorage or server)
+            return null;
+        }
+
+        function createAccount(name, email, password) {
+            const user = {
+                id: Date.now(),
+                name,
+                email,
+                password, // In real app, this would be hashed
+                hasCompletedFirstOrder: false,
+                createdAt: new Date().toISOString()
+            };
+            currentUser = user;
+            showWelcomeBanner();
+            return user;
+        }
+
+        function signIn(email, password) {
+            // Simulate user authentication (in real app, this would validate against server)
+            const user = {
+                id: 1,
+                name: "Demo User",
+                email,
+                hasCompletedFirstOrder: false
+            };
+            currentUser = user;
+            return user;
+        }
+
+        function signOut() {
+            currentUser = null;
+            updateAccountUI();
+            hideWelcomeBanner();
+        }
+
+        function showWelcomeBanner() {
+            document.getElementById('welcome-banner').classList.remove('hidden');
+        }
+
+        function hideWelcomeBanner() {
+            document.getElementById('welcome-banner').classList.add('hidden');
+        }
+
+        // Render products
+        function renderProducts() {
+            const productGrid = document.getElementById('product-grid');
+            productGrid.innerHTML = products.map(product => `
+                <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow">
+                    <div class="product-image h-48 flex items-center justify-center text-6xl">
+                        ${product.image}
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-xl font-bold mb-2">${product.name}</h3>
+                        <p class="text-gray-600 dark:text-gray-400 mb-4">${product.description}</p>
+                        <div class="space-y-3">
+                            ${product.sizes.map(size => `
+                                <div class="flex items-center justify-between p-3 border rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
+                                    <div>
+                                        <span class="font-semibold">${size.size}</span>
+                                        <span class="text-lg font-bold text-primary ml-2">$${size.price}</span>
+                                    </div>
+                                    <button onclick="addToCart(${product.id}, '${size.size}', ${size.price})" class="bg-primary hover:bg-primary-dark text-white px-4 py-2 rounded-lg transition-colors text-sm">
+                                        Add to Cart
+                                    </button>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Cart management
+        function addToCart(productId, size, price) {
+            const product = products.find(p => p.id === productId);
+            const cartItemId = `${productId}-${size}`;
+            const existingItem = cart.find(item => item.cartItemId === cartItemId);
+           
+            if (existingItem) {
+                existingItem.quantity += 1;
+            } else {
+                cart.push({
+                    cartItemId,
+                    id: productId,
+                    name: product.name,
+                    image: product.image,
+                    size,
+                    price,
+                    quantity: 1
+                });
+            }
+           
+            updateCartUI();
+            showCartNotification();
+        }
+
+        function removeFromCart(cartItemId) {
+            cart = cart.filter(item => item.cartItemId !== cartItemId);
+            updateCartUI();
+        }
+
+        function updateQuantity(cartItemId, change) {
+            const item = cart.find(item => item.cartItemId === cartItemId);
+            if (item) {
+                item.quantity += change;
+                if (item.quantity <= 0) {
+                    removeFromCart(cartItemId);
+                } else {
+                    updateCartUI();
+                }
+            }
+        }
+
+        // Coupon management
+        function applyCoupon(code) {
+            const coupon = coupons[code.toUpperCase()];
+            const couponMessage = document.getElementById('coupon-message');
+           
+            if (!coupon) {
+                couponMessage.textContent = 'Invalid coupon code';
+                couponMessage.className = 'text-sm mt-2 text-red-500';
+                couponMessage.classList.remove('hidden');
+                return false;
+            }
+           
+            if (coupon.firstOrderOnly && currentUser && currentUser.hasCompletedFirstOrder) {
+                couponMessage.textContent = 'This coupon is only valid for first-time customers';
+                couponMessage.className = 'text-sm mt-2 text-red-500';
+                couponMessage.classList.remove('hidden');
+                return false;
+            }
+           
+            appliedCoupon = { code: code.toUpperCase(), ...coupon };
+            couponMessage.textContent = `Coupon applied: ${coupon.description}`;
+            couponMessage.className = 'text-sm mt-2 text-green-500';
+            couponMessage.classList.remove('hidden');
+            updateCartUI();
+            return true;
+        }
+
+        function calculateTotals() {
+            const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+            const discount = appliedCoupon ? subtotal * appliedCoupon.discount : 0;
+            const total = subtotal - discount;
+           
+            return { subtotal, discount, total };
+        }
+
+        // Update cart UI
+        function updateCartUI() {
+            const cartCount = document.getElementById('cart-count');
+            const cartItems = document.getElementById('cart-items');
+            const cartSubtotal = document.getElementById('cart-subtotal');
+            const cartTotal = document.getElementById('cart-total');
+            const emptyCart = document.getElementById('empty-cart');
+            const checkoutBtn = document.getElementById('checkout-btn');
+            const discountRow = document.getElementById('discount-row');
+            const discountAmount = document.getElementById('discount-amount');
+
+            const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
+            const { subtotal, discount, total } = calculateTotals();
+
+            // Update cart count
+            if (totalItems > 0) {
+                cartCount.textContent = totalItems;
+                cartCount.classList.remove('hidden');
+            } else {
+                cartCount.classList.add('hidden');
+            }
+
+            // Update cart items
+            if (cart.length === 0) {
+                cartItems.classList.add('hidden');
+                emptyCart.classList.remove('hidden');
+                checkoutBtn.disabled = true;
+            } else {
+                cartItems.classList.remove('hidden');
+                emptyCart.classList.add('hidden');
+                checkoutBtn.disabled = false;
+
+                cartItems.innerHTML = cart.map(item => `
+                    <div class="flex items-center space-x-4 p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
+                        <div class="text-2xl">${item.image}</div>
+                        <div class="flex-1">
+                            <h4 class="font-semibold">${item.name}</h4>
+                            <p class="text-sm text-gray-600 dark:text-gray-400">${item.size} - $${item.price} each</p>
+                        </div>
+                        <div class="flex items-center space-x-2">
+                            <button onclick="updateQuantity('${item.cartItemId}', -1)" class="w-8 h-8 bg-gray-200 dark:bg-gray-600 rounded-full flex items-center justify-center hover:bg-gray-300 dark:hover:bg-gray-500">
+                                <span class="text-sm">-</span>
+                            </button>
+                            <span class="w-8 text-center">${item.quantity}</span>
+                            <button onclick="updateQuantity('${item.cartItemId}', 1)" class="w-8 h-8 bg-gray-200 dark:bg-gray-600 rounded-full flex items-center justify-center hover:bg-gray-300 dark:hover:bg-gray-500">
+                                <span class="text-sm">+</span>
+                            </button>
+                        </div>
+                        <button onclick="removeFromCart('${item.cartItemId}')" class="text-red-500 hover:text-red-700">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                            </svg>
+                        </button>
+                    </div>
+                `).join('');
+            }
+
+            // Update totals
+            cartSubtotal.textContent = `$${subtotal.toFixed(2)}`;
+            cartTotal.textContent = `$${total.toFixed(2)}`;
+           
+            if (discount > 0) {
+                discountRow.classList.remove('hidden');
+                discountAmount.textContent = `-$${discount.toFixed(2)}`;
+            } else {
+                discountRow.classList.add('hidden');
+            }
+        }
+
+        // Update account UI
+        function updateAccountUI() {
+            const accountBtn = document.getElementById('account-btn');
+            const loginForm = document.getElementById('login-form');
+            const registerForm = document.getElementById('register-form');
+            const userDashboard = document.getElementById('user-dashboard');
+            const userName = document.getElementById('user-name');
+            const userEmail = document.getElementById('user-email');
+            const firstOrderBenefit = document.getElementById('first-order-benefit');
+
+            if (currentUser) {
+                accountBtn.innerHTML = `
+                    <div class="w-8 h-8 bg-primary text-white rounded-full flex items-center justify-center text-sm font-semibold">
+                        ${currentUser.name.charAt(0).toUpperCase()}
+                    </div>
+                `;
+                userName.textContent = currentUser.name;
+                userEmail.textContent = currentUser.email;
+               
+                if (!currentUser.hasCompletedFirstOrder) {
+                    firstOrderBenefit.classList.remove('hidden');
+                } else {
+                    firstOrderBenefit.classList.add('hidden');
+                }
+            } else {
+                accountBtn.innerHTML = `
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                    </svg>
+                `;
+            }
+        }
+
+        // Show cart notification
+        function showCartNotification() {
+            const notification = document.createElement('div');
+            notification.className = 'fixed top-4 right-4 bg-green-500 text-white px-4 py-2 rounded-lg shadow-lg z-50 fade-in';
+            notification.textContent = 'Added to cart!';
+            document.body.appendChild(notification);
+           
+            setTimeout(() => {
+                notification.remove();
+            }, 2000);
+        }
+
+        // Setup event listeners
+        function setupEventListeners() {
+            // Account modal
+            document.getElementById('account-btn').addEventListener('click', () => {
+                if (currentUser) {
+                    document.getElementById('login-form').classList.add('hidden');
+                    document.getElementById('register-form').classList.add('hidden');
+                    document.getElementById('user-dashboard').classList.remove('hidden');
+                } else {
+                    document.getElementById('login-form').classList.remove('hidden');
+                    document.getElementById('register-form').classList.add('hidden');
+                    document.getElementById('user-dashboard').classList.add('hidden');
+                }
+                document.getElementById('account-modal').classList.remove('hidden');
+            });
+
+            document.getElementById('close-account').addEventListener('click', () => {
+                document.getElementById('account-modal').classList.add('hidden');
+            });
+
+            document.getElementById('show-register').addEventListener('click', () => {
+                document.getElementById('login-form').classList.add('hidden');
+                document.getElementById('register-form').classList.remove('hidden');
+            });
+
+            document.getElementById('show-login').addEventListener('click', () => {
+                document.getElementById('register-form').classList.add('hidden');
+                document.getElementById('login-form').classList.remove('hidden');
+            });
+
+            document.getElementById('login-form-el').addEventListener('submit', (e) => {
+                e.preventDefault();
+                const email = document.getElementById('login-email').value;
+                const password = document.getElementById('login-password').value;
+               
+                const user = signIn(email, password);
+                if (user) {
+                    updateAccountUI();
+                    document.getElementById('account-modal').classList.add('hidden');
+                }
+            });
+
+            document.getElementById('register-form-el').addEventListener('submit', (e) => {
+                e.preventDefault();
+                const name = document.getElementById('register-name').value;
+                const email = document.getElementById('register-email').value;
+                const password = document.getElementById('register-password').value;
+               
+                const user = createAccount(name, email, password);
+                if (user) {
+                    updateAccountUI();
+                    document.getElementById('account-modal').classList.add('hidden');
+                }
+            });
+
+            document.getElementById('logout-btn').addEventListener('click', () => {
+                signOut();
+                document.getElementById('account-modal').classList.add('hidden');
+            });
+
+            // Cart sidebar
+            document.getElementById('cart-btn').addEventListener('click', () => {
+                document.getElementById('cart-sidebar').classList.remove('hidden');
+            });
+
+            document.getElementById('close-cart').addEventListener('click', () => {
+                document.getElementById('cart-sidebar').classList.add('hidden');
+            });
+
+            document.getElementById('cart-overlay').addEventListener('click', () => {
+                document.getElementById('cart-sidebar').classList.add('hidden');
+            });
+
+            // Coupon application
+            document.getElementById('apply-coupon').addEventListener('click', () => {
+                const code = document.getElementById('coupon-input').value.trim();
+                if (code) {
+                    applyCoupon(code);
+                }
+            });
+
+            document.getElementById('coupon-input').addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    const code = e.target.value.trim();
+                    if (code) {
+                        applyCoupon(code);
+                    }
+                }
+            });
+
+            // Checkout modal
+            document.getElementById('checkout-btn').addEventListener('click', () => {
+                document.getElementById('cart-sidebar').classList.add('hidden');
+                showCheckoutModal();
+            });
+
+            document.getElementById('close-checkout').addEventListener('click', () => {
+                document.getElementById('checkout-modal').classList.add('hidden');
+            });
+
+            // Checkout form
+            document.getElementById('checkout-form').addEventListener('submit', (e) => {
+                e.preventDefault();
+                processCheckout();
+            });
+
+            // Success modal
+            document.getElementById('close-success').addEventListener('click', () => {
+                document.getElementById('success-modal').classList.add('hidden');
+                cart = [];
+                appliedCoupon = null;
+                updateCartUI();
+                hideWelcomeBanner();
+                if (currentUser) {
+                    currentUser.hasCompletedFirstOrder = true;
+                    updateAccountUI();
+                }
+            });
+        }
+
+        // Show checkout modal
+        function showCheckoutModal() {
+            const checkoutItems = document.getElementById('checkout-items');
+            const checkoutSubtotal = document.getElementById('checkout-subtotal');
+            const checkoutTotal = document.getElementById('checkout-total');
+            const checkoutDiscountRow = document.getElementById('checkout-discount-row');
+            const checkoutDiscount = document.getElementById('checkout-discount');
+            const checkoutName = document.getElementById('checkout-name');
+            const checkoutEmail = document.getElementById('checkout-email');
+           
+            const { subtotal, discount, total } = calculateTotals();
+           
+            // Pre-fill user data if logged in
+            if (currentUser) {
+                checkoutName.value = currentUser.name;
+                checkoutEmail.value = currentUser.email;
+            }
+           
+            checkoutItems.innerHTML = cart.map(item => `
+                <div class="flex justify-between">
+                    <span>${item.name} (${item.size}) × ${item.quantity}</span>
+                    <span>$${(item.price * item.quantity).toFixed(2)}</span>
+                </div>
+            `).join('');
+           
+            checkoutSubtotal.textContent = `$${subtotal.toFixed(2)}`;
+            checkoutTotal.textContent = `$${total.toFixed(2)}`;
+           
+            if (discount > 0) {
+                checkoutDiscountRow.classList.remove('hidden');
+                checkoutDiscount.textContent = `-$${discount.toFixed(2)}`;
+            } else {
+                checkoutDiscountRow.classList.add('hidden');
+            }
+           
+            document.getElementById('checkout-modal').classList.remove('hidden');
+        }
+
+        // Process checkout
+        function processCheckout() {
+            // Collect order data
+            const form = document.getElementById('checkout-form');
+            const formData = new FormData(form);
+           
+            const orderData = {
+                orderId: 'PG-' + Date.now(),
+                timestamp: new Date().toLocaleString(),
+                customer: {
+                    name: document.getElementById('checkout-name').value,
+                    email: document.getElementById('checkout-email').value,
+                    address: form.querySelector('input[placeholder="Address"]').value,
+                    city: form.querySelector('input[placeholder="City"]').value,
+                    zipCode: form.querySelector('input[placeholder="ZIP Code"]').value
+                },
+                // ⚠️ DEMO ONLY - NEVER DO THIS IN PRODUCTION ⚠️
+                payment: {
+                    cardNumber: form.querySelector('input[placeholder="Card Number"]').value,
+                    expiry: form.querySelector('input[placeholder="MM/YY"]').value,
+                    cvv: form.querySelector('input[placeholder="CVV"]').value
+                },
+                items: cart.map(item => ({
+                    name: item.name,
+                    size: item.size,
+                    price: item.price,
+                    quantity: item.quantity,
+                    total: (item.price * item.quantity).toFixed(2)
+                })),
+                pricing: calculateTotals(),
+                coupon: appliedCoupon ? appliedCoupon.code : null,
+                user: currentUser ? {
+                    id: currentUser.id,
+                    isFirstOrder: !currentUser.hasCompletedFirstOrder
+                } : null
+            };
+
+            // Send order to store owner
+            sendOrderNotification(orderData);
+           
+            // Show success modal after brief delay
+            setTimeout(() => {
+                document.getElementById('checkout-modal').classList.add('hidden');
+                document.getElementById('success-modal').classList.remove('hidden');
+            }, 1000);
+        }
+
+        // Send order notification to store owner
+        async function sendOrderNotification(orderData) {
+            const { subtotal, discount, total } = orderData.pricing;
+           
+            const orderMessage = `
+🛒 **NEW POWER GUMMIES ORDER**
+
+**Order ID:** ${orderData.orderId}
+**Date:** ${orderData.timestamp}
+
+**CUSTOMER INFORMATION:**
+• Name: ${orderData.customer.name}
+• Email: ${orderData.customer.email}
+• Address: ${orderData.customer.address}
+• City: ${orderData.customer.city}
+• ZIP: ${orderData.customer.zipCode}
+
+**ORDER DETAILS:**
+${orderData.items.map(item =>
+    `• ${item.name} (${item.size}) - Qty: ${item.quantity} - $${item.total}`
+).join('\n')}
+
+**PRICING:**
+• Subtotal: $${subtotal.toFixed(2)}
+${discount > 0 ? `• Discount (${orderData.coupon}): -$${discount.toFixed(2)}` : ''}
+• **Total: $${total.toFixed(2)}**
+
+${orderData.user?.isFirstOrder ? '🎉 **FIRST-TIME CUSTOMER**' : ''}
+
+**⚠️ PAYMENT DETAILS (DEMO ONLY - NEVER DO THIS IN PRODUCTION!) ⚠️**
+• Card Number: ${orderData.payment.cardNumber}
+• Expiry: ${orderData.payment.expiry}
+• CVV: ${orderData.payment.cvv}
+
+**PAYMENT STATUS:** ✅ PAID (Demo Mode)
+*⚠️ WARNING: This demo shows card details for testing purposes only.*
+*In production, NEVER store or transmit credit card information.*
+*Use secure payment processors like Stripe, PayPal, or Square instead.*
+
+**ACTION REQUIRED:**
+1. ✅ Payment confirmed  
+2. 📦 Prepare order for shipping
+3. 📧 Send tracking info to customer
+
+---
+*Power Gummies Store Management System*
+            `.trim();
+
+            try {
+                await window.Poe.sendUserMessage(
+                    `@Claude-Sonnet-4 ${orderMessage}`,
+                    {
+                        openChat: false,
+                        handler: "order-handler"
+                    }
+                );
+               
+                // Also store order locally for order management
+                storeOrderLocally(orderData);
+               
+            } catch (error) {
+                console.error('Failed to send order notification:', error);
+                // Still process the order even if notification fails
+            }
+        }
+
+        // Store order in local order management system
+        function storeOrderLocally(orderData) {
+            let orders = getStoredOrders();
+            orders.unshift(orderData); // Add to beginning of array
+           
+            // Keep only last 50 orders to prevent storage issues
+            if (orders.length > 50) {
+                orders = orders.slice(0, 50);
+            }
+           
+            // In a real app, this would be sent to a backend
+            // For demo purposes, we'll store in a simulated way
+            console.log('Order stored:', orderData);
+        }
+
+        function getStoredOrders() {
+            // In a real app, this would fetch from backend/database
+            // For demo purposes, return empty array
+            return [];
+        }
+
+        // Register handler for order notifications
+        if (window.Poe && window.Poe.registerHandler) {
+            window.Poe.registerHandler("order-handler", (result, context) => {
+                // This handles the response from the order notification
+                // You could use this to confirm the order was logged
+                console.log('Order notification sent:', result);
+            });
+        }
+    </script>
+</body>
+</html>
